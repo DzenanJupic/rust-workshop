@@ -1,0 +1,13 @@
+[package]
+name = "proc-macros"
+version = "0.1.0"
+edition = "2021"
+
+[[bin]]
+name = "proc-macros"
+path = "main.rs"
+
+[dependencies]
+derive_builder = { path = "builder" }
+seq = { path = "seq" }
+sorted = { path = "sorted" }
