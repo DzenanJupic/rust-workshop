@@ -20,6 +20,7 @@
 mod boxed;
 mod mutex;
 mod owning_handle;
+mod owned_slice;
 mod breakpoint_reached_future;
 
 #[test]
