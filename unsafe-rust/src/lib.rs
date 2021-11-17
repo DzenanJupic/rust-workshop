@@ -42,7 +42,8 @@ fn test_mutex() {
     assert_eq!(dbg!(*m.lock()), 5);
 }*/
 
-/*fn test_owning_handle() {
+/*#[test]
+fn test_owning_handle() {
     use std::sync::{Mutex, MutexGuard};
     use owning_handle::OwningHandle;
 
