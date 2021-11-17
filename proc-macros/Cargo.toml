@@ -8,6 +8,8 @@ name = "proc-macros"
 path = "main.rs"
 
 [dependencies]
+concat-idents = { path = "concat-idents" }
+
 derive_builder = { path = "builder" }
 seq = { path = "seq" }
 sorted = { path = "sorted" }
