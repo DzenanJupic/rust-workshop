@@ -31,21 +31,21 @@ impl Breakpoint {
 
 pub struct BreakpointReachedFuture {
     fut: Pin<ChannelReceivedFuture>,
+    receiver: Box<Receiver<()>>,
 }
 
 impl BreakpointReachedFuture {
     pub fn new(mut receiver: Receiver<()>) -> Self {
-        // let fut = Box::pin(receiver.recv()) as Pin<ChannelReceivedFuture>;
-        //           ---------^^^^^^^^^^^^^^^-------------------------------
-        //           |        |
-        //           |        borrowed value does not live long enough
-        //           type annotation requires that `receiver` is borrowed for `'static`
-        //       ...
-        //
-        //  `receiver` dropped here while still borrowed
+        let mut boxed = Box::new(receiver);
+
+        let receiver_ref: &'static mut Receiver<()> = unsafe { &mut *(&mut *boxed as *mut Receiver<()>) };
+
+        let fut = receiver_ref.recv();
+        let fut = Box::pin(fut) as Pin<ChannelReceivedFuture>;
 
         Self {
-            fut: todo!(),
+            fut,
+            receiver: boxed,
         }
     }
 }
