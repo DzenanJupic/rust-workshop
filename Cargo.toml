@@ -1,0 +1,2 @@
+[workspace]
+members = ["unsafe-rust", "proc-macros", "wasm"]
