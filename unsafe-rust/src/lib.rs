@@ -22,7 +22,7 @@ mod mutex;
 mod owning_handle;
 mod breakpoint_reached_future;
 
-/*#[test]
+#[test]
 fn test_box() {
     use boxed::Box;
 
@@ -30,7 +30,7 @@ fn test_box() {
     assert_eq!(dbg!(*b), 42);
     *b = 5;
     assert_eq!(dbg!(*b), 5);
-}*/
+}
 
 /*#[test]
 fn test_mutex() {
