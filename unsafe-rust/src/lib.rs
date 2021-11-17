@@ -8,6 +8,7 @@
 //! ## Examples
 //! - [ ] Box<T>
 //! - [ ] Mutex<T>
+//! - [ ] OwningHandle<O, H>
 //! - [ ] BreakpointReachedFuture
 //!
 //! ## Other topics
@@ -18,6 +19,7 @@
 
 mod boxed;
 mod mutex;
+mod owning_handle;
 mod breakpoint_reached_future;
 
 /*#[test]
@@ -38,6 +40,28 @@ fn test_mutex() {
     assert_eq!(dbg!(*m.lock()), 42);
     *m.lock() = 5;
     assert_eq!(dbg!(*m.lock()), 5);
+}*/
+
+/*fn test_owning_handle() {
+    use std::sync::{Mutex, MutexGuard};
+    use owning_handle::OwningHandle;
+
+    fn create_locked_mutex() -> OwningHandle<std::sync::Arc<Mutex<i32>>, MutexGuard<'static, i32>> {
+        let m = std::sync::Arc::new(Mutex::new(42));
+
+        OwningHandle::mapped_mut(
+            std::sync::Arc::clone(&m),
+            |m| m.lock().unwrap()
+        )
+    }
+
+    let mut oh = create_locked_mutex();
+    **oh.as_mut() = 5;
+
+    let m = oh.owner().clone();
+    drop(oh);
+
+    assert_eq!(dbg!(*m.lock().unwrap()), 5);
 }*/
 
 
