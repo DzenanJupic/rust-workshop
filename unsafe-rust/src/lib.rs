@@ -42,7 +42,7 @@ fn test_mutex() {
     assert_eq!(dbg!(*m.lock()), 5);
 }
 
-/*#[test]
+#[test]
 fn test_owning_handle() {
     use std::sync::{Mutex, MutexGuard};
     use owning_handle::OwningHandle;
@@ -50,7 +50,7 @@ fn test_owning_handle() {
     fn create_locked_mutex() -> OwningHandle<std::sync::Arc<Mutex<i32>>, MutexGuard<'static, i32>> {
         let m = std::sync::Arc::new(Mutex::new(42));
 
-        OwningHandle::mapped_mut(
+        OwningHandle::mapped(
             std::sync::Arc::clone(&m),
             |m| m.lock().unwrap()
         )
@@ -63,7 +63,7 @@ fn test_owning_handle() {
     drop(oh);
 
     assert_eq!(dbg!(*m.lock().unwrap()), 5);
-}*/
+}
 
 
 /*#[tokio::test]
