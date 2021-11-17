@@ -32,7 +32,7 @@ fn test_box() {
     assert_eq!(dbg!(*b), 5);
 }
 
-/*#[test]
+#[test]
 fn test_mutex() {
     use mutex::Mutex;
 
@@ -40,7 +40,7 @@ fn test_mutex() {
     assert_eq!(dbg!(*m.lock()), 42);
     *m.lock() = 5;
     assert_eq!(dbg!(*m.lock()), 5);
-}*/
+}
 
 /*#[test]
 fn test_owning_handle() {
