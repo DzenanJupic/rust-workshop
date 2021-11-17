@@ -1,2 +1,10 @@
 [workspace]
-members = ["unsafe-rust", "proc-macros", "wasm"]
+members = [
+    "unsafe-rust",
+    "proc-macros",
+    "proc-macros/concat-idents",
+    "proc-macros/builder",
+    "proc-macros/seq",
+    "proc-macros/sorted",
+    "wasm",
+]
