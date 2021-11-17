@@ -9,8 +9,12 @@
 //! - [ ] Box<T>
 //! - [ ] Mutex<T>
 //! - [ ] BreakpointReachedFuture
+//!
+//! ## Other topics
+//! - [ ] soundness
+//! - [ ] Pinning
 
-#![allow(dead_code, unused_variables)]
+#![allow(dead_code, unused_variables, unused_mut, unreachable_code)]
 
 mod boxed;
 mod mutex;

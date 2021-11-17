@@ -6,7 +6,9 @@
 use std::pin::Pin;
 use std::task::{Context, Poll};
 
-use tokio::sync::broadcast::{channel, Receiver, Sender};
+use tokio::sync::broadcast::{channel, error::RecvError, Receiver, Sender};
+
+type ChannelReceivedFuture = Box<dyn std::future::Future<Output=Result<(), RecvError>>>;
 
 pub struct Breakpoint {
     reached_tx: Sender<()>,
@@ -28,13 +30,22 @@ impl Breakpoint {
 }
 
 pub struct BreakpointReachedFuture {
-    // todo
+    fut: Pin<ChannelReceivedFuture>,
 }
 
 impl BreakpointReachedFuture {
-    pub fn new(receiver: Receiver<()>) -> Self {
+    pub fn new(mut receiver: Receiver<()>) -> Self {
+        // let fut = Box::pin(receiver.recv()) as Pin<ChannelReceivedFuture>;
+        //           ---------^^^^^^^^^^^^^^^-------------------------------
+        //           |        |
+        //           |        borrowed value does not live long enough
+        //           type annotation requires that `receiver` is borrowed for `'static`
+        //       ...
+        //
+        //  `receiver` dropped here while still borrowed
+
         Self {
-            // todo
+            fut: todo!(),
         }
     }
 }
@@ -42,7 +53,10 @@ impl BreakpointReachedFuture {
 impl std::future::Future for BreakpointReachedFuture {
     type Output = ();
 
-    fn poll(self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
-        todo!()
+    fn poll(mut self: Pin<&mut Self>, cx: &mut Context<'_>) -> Poll<Self::Output> {
+        self.fut
+            .as_mut()
+            .poll(cx)
+            .map(|_| ())
     }
 }
