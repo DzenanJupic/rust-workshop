@@ -9,7 +9,10 @@ path = "main.rs"
 
 [dependencies]
 concat-idents = { path = "concat-idents" }
+log-attributes = { path = "log-attributes" }
 
 derive_builder = { path = "builder" }
 seq = { path = "seq" }
 sorted = { path = "sorted" }
+
+log = "0.4.14"
