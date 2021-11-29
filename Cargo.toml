@@ -2,7 +2,9 @@
 members = [
     "unsafe-rust",
     "proc-macros",
+    "proc-macros/log-attributes",
     "proc-macros/concat-idents",
+    "proc-macros/custom_debug",
     "proc-macros/builder",
     "proc-macros/seq",
     "proc-macros/sorted",
