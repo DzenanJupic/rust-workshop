@@ -7,6 +7,7 @@ use syn::{Block, Ident, LitBool, LitChar, LitInt, LitStr, Token};
 use syn::parse::ParseStream;
 use syn::punctuated::Punctuated;
 use syn::token::Underscore;
+use syn::visit_mut::VisitMut;
 
 #[derive(Debug)]
 struct InputParser {
@@ -27,12 +28,38 @@ impl syn::parse::Parse for InputParser {
 }
 
 impl InputParser {
-    fn into_token_stream(self) -> TokenStream {
-        TokenStream::new()
+    fn replace_ident_and_generate_token_stream(mut self) -> TokenStream {
+        let mut ident_replacer = IdentReplacer {
+            replace_ident: self.replace_ident,
+            concatenated_ident: self.concatenated_ident,
+        };
+        ident_replacer.visit_block_mut(&mut self.block);
+
+        let stmts = self.block.stmts;
+
+        (quote::quote! {
+            #( #stmts )*
+        }).into()
     }
 }
 
 struct IdentParser(Ident);
+
+struct IdentReplacer {
+    replace_ident: Ident,
+    concatenated_ident: Ident,
+}
+
+impl VisitMut for IdentReplacer {
+    fn visit_ident_mut(&mut self, i: &mut Ident) {
+        if *i == self.replace_ident {
+            *i = self.concatenated_ident.clone();
+        }
+
+        // delegate to default impl
+        syn::visit_mut::visit_ident_mut(self, i);
+    }
+}
 
 impl syn::parse::Parse for IdentParser {
     fn parse(input: ParseStream) -> syn::Result<Self> {
@@ -97,5 +124,6 @@ impl syn::parse::Parse for IdentPart {
 pub fn concat_idents(input: TokenStream) -> TokenStream {
     let input = syn::parse_macro_input!(input as InputParser);
     eprintln!("{:#?}", input);
-    TokenStream::new()
+
+    input.replace_ident_and_generate_token_stream()
 }
