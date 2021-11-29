@@ -3,7 +3,9 @@
 //!
 //!
 
+use std::mem::ManuallyDrop;
 use std::pin::Pin;
+use std::ptr::NonNull;
 use std::task::{Context, Poll};
 
 use tokio::sync::broadcast::{channel, error::RecvError, Receiver, Sender};
@@ -30,22 +32,32 @@ impl Breakpoint {
 }
 
 pub struct BreakpointReachedFuture {
-    fut: Pin<ChannelReceivedFuture>,
-    receiver: Box<Receiver<()>>,
+    fut: ManuallyDrop<Pin<ChannelReceivedFuture>>,
+    receiver: NonNull<Receiver<()>>,
 }
 
 impl BreakpointReachedFuture {
     pub fn new(mut receiver: Receiver<()>) -> Self {
-        let mut boxed = Box::new(receiver);
+        let boxed = Box::new(receiver);
+        let mut ptr = unsafe { NonNull::new_unchecked(Box::into_raw(boxed)) };
 
-        let receiver_ref: &'static mut Receiver<()> = unsafe { &mut *(&mut *boxed as *mut Receiver<()>) };
+        let receiver_ref: &'static mut Receiver<()> = unsafe { ptr.as_mut() };
 
         let fut = receiver_ref.recv();
         let fut = Box::pin(fut) as Pin<ChannelReceivedFuture>;
 
         Self {
-            fut,
-            receiver: boxed,
+            fut: ManuallyDrop::new(fut),
+            receiver: ptr,
+        }
+    }
+}
+
+impl Drop for BreakpointReachedFuture {
+    fn drop(&mut self) {
+        unsafe {
+            ManuallyDrop::drop(&mut self.fut);
+            drop(Box::from_raw(self.receiver.as_ptr()));
         }
     }
 }
