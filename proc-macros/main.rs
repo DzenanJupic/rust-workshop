@@ -6,4 +6,10 @@
 // To run the code:
 //     $ cargo run
 
+concat_idents::concat_idents! {
+    fn t() -> u32 {
+        42
+    }
+}
+
 fn main() {}
