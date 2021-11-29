@@ -1,18 +1,20 @@
 use std::mem::ManuallyDrop;
-use std::ops::DerefMut;
 
 pub struct OwningHandle<O, H> {
     owner: ManuallyDrop<Box<O>>,
     handle: ManuallyDrop<H>,
 }
 
-impl<O: 'static + Unpin, H> OwningHandle<O, H> {
+impl<O: 'static, H> OwningHandle<O, H> {
     pub fn mapped<F: Fn(&'static O) -> H>(
         owner: O,
         map: F
     ) -> Self {
         let boxed = Box::new(owner);
-        let owner_ref: &'static _ = unsafe { &*(&*boxed as *const O) };
+
+        let boxed_ref = &*boxed;
+        let boxed_ptr = boxed_ref as *const O;
+        let owner_ref: &'static O = unsafe { &*boxed_ptr };
 
         let handle = map(owner_ref);
 
