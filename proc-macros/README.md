@@ -7,6 +7,7 @@
 ## Contents
 
 - [**Projects**](#projects) — Introduction to each of the projects
+  - [**Derive macro:** `derive(CustomDebug)`](#derive-macro-derivecustomdebug)
   - [**Derive macro:** `derive(Builder)`](#derive-macro-derivebuilder)
   - [**Function-like macro:** `seq!`](#function-like-macro-seq)
   - [**Attribute macro:** `#[sorted]`](#attribute-macro-sorted)
@@ -20,6 +21,44 @@
 
 Here is an introduction to each of the projects. Note that each of these projects goes into more depth than what is
 described in the introduction here.
+
+### Derive macro: `derive(CustomDebug)`
+
+This macro implements a derive for the standard library [`std::fmt::Debug`]
+trait that is more customizable than the similar `Debug` derive macro exposed by the standard library.
+
+[`std::fmt::Debug`]: https://doc.rust-lang.org/std/fmt/trait.Debug.html
+
+In particular, we'd like to be able to select the formatting used for individual struct fields by providing a format
+string in the style expected by Rust string formatting macros like `format!` and `println!`.
+
+```rust
+use derive_debug::CustomDebug;
+
+#[derive(CustomDebug)]
+pub struct Field {
+    name: String,
+    #[debug = "0b{:08b}"]
+    bitmask: u8,
+}
+```
+
+Here, one possible instance of the struct above might be printed by its generated `Debug` impl like this:
+
+```console
+Field { name: "st0", bitmask: 0b00011100 }
+```
+
+This project covers:
+
+- traversing syntax trees;
+- constructing output source code;
+- processing helper attributes;
+- dealing with lifetime parameters and type parameters;
+- inferring trait bounds on generic parameters of trait impls;
+- limitations of derive's ability to emit universally correct trait bounds.
+
+*Project skeleton is located under the <kbd>debug</kbd> directory.*
 
 ### Derive macro: `derive(Builder)`
 
